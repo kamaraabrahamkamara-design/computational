@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biomedical Engineering Calibration Suite - BIOSSA UL</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --primary: #0284c7; 
+            --primary-dark: #0369a1;
+            --primary-light: #e0f2fe;
+            --text: #0f172a;
+            --text-muted: #475569;
+            --border: #cbd5e1;
+            --accent: #dc2626;
+            --success: #16a34a;
+            --success-light: #f0fdf4;
+            --error-light: #fef2f2;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            box-sizing: border-box;
+        }
+
+        .header-branding {
+            text-align: center;
+            margin-bottom: 24px;
+            border-bottom: 3px double var(--primary);
+            padding-bottom: 20px;
+        }
+
+        .header-branding h1 {
+            margin: 0;
+            font-size: 2rem;
+            color: var(--text);
+            letter-spacing: -0.5px;
+            font-weight: 800;
+        }
+
+        .institution-tag {
+            font-size: 1.15rem;
+            color: var(--primary-dark);
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-top: 8px;
+        }
+
+        .department-subtag {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.75px;
+        }
+
+        .founder-tag {
+            font-size: 0.95rem;
+            color: var(--text);
+            font-style: italic;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f1f5f9;
+            padding: 14px 20px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-weight: 700;
+            border: 1px solid var(--border);
+            font-size: 1rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            padding: 14px 24px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--text-muted);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            flex: 1;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px -2px rgba(2, 132, 199, 0.3);
+        }
+
+        .canvas-container {
+            position: relative;
+            background: #0f172a; 
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #334155;
+            margin-bottom: 24px;
+            box-shadow: inset 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: #f8fafc;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+            accent-color: var(--primary);
+            height: 8px;
+            border-radius: 4px;
+            background: #e2e8f0;
+        }
+
+        .interactive-form {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+            background: #f1f5f9;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .interactive-form label {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .interactive-form input[type="number"] {
+            padding: 10px 14px;
+            font-size: 1.1rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            width: 120px;
+            font-weight: 700;
+            text-align: center;
+            color: var(--text);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            margin-bottom: 4px;
+        }
+
+        button.action-btn {
+            flex: 1;
+            background-color: #475569;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        button.action-btn:hover {
+            background-color: #334155;
+        }
+
+        button.action-btn:active {
+            transform: scale(0.98);
+        }
+
+        button.action-btn.verify-btn {
+            background-color: var(--primary);
+            padding: 12px 24px;
+        }
+
+        button.action-btn.verify-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .readout {
+            padding: 16px;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .status-correct {
+            background: var(--success-light);
+            border-left: 5px solid var(--success);
+            color: #14532d;
+        }
+
+        .status-wrong {
+            background: var(--error-light);
+            border-left: 5px solid var(--accent);
+            color: #7f1d1d;
+        }
+
+        .history-section {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            background: #ffffff;
+        }
+
+        .history-section h3 {
+            margin-top: 0;
+            margin-bottom: 14px;
+            font-size: 1.1rem;
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            max-height: 200px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .text-success { color: var(--success); font-weight: 700; }
+        .text-danger { color: var(--accent); font-weight: 700; }
+
+        .footer-branding {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+            line-height: 1.6;
+            width: 100%;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-branding">
+        <h1>Biomedical Engineering Calibration Suite</h1>
+        <div class="institution-tag">BIOSSA &bull; University of Liberia</div>
+        <div class="department-subtag">Department of Biological Sciences &bull; TJRF COST</div>
+        <div class="founder-tag">Founder: Abraham P.Z. Kamara, BSc. Biomedical Science</div>
+    </div>
+
+    <div class="stats-bar">
+        <div>🔬 Laboratory Metric Tracking</div>
+        <div>Validated Score: <span id="scoreText" style="color: var(--primary-dark); font-size: 1.3rem;">0</span></div>
+    </div>
+    
+    <div class="tabs">
+        <button class="tab-btn active" id="tabCaliper" onclick="switchTab('caliper')">Vernier Caliper Module</button>
+        <button class="tab-btn" id="tabMicrometer" onclick="switchTab('micrometer')">Micrometer Screw Gauge</button>
+    </div>
+
+    <div class="canvas-container">
+        <canvas id="simCanvas" width="800" height="250"></canvas>
+    </div>
+
+    <div class="controls">
+        <div class="control-group">
+            <label id="sliderLabel" for="measurementSlider">Adjust Specimen Dimension (mm):</label>
+            <input type="range" id="measurementSlider" min="0" max="30" step="0.05" value="7.45">
+        </div>
+
+        <div class="btn-group">
+            <button class="action-btn" onclick="generateRandom()">Load Random Specimen</button>
+            <button class="action-btn" onclick="toggleAnswer()">Override Telemetry Engine</button>
+        </div>
+
+        <div class="interactive-form">
+            <label for="userGuess">Input Calculated Dimension:</label>
+            <div class="input-wrapper">
+                <input type="number" id="userGuess" step="0.01" placeholder="0.00"> 
+                <span><strong>mm</strong></span>
+            </div>
+            <button class="action-btn verify-btn" onclick="verifyReading()">Verify Alignment</button>
+        </div>
+
+        <div id="answerReadout" class="readout hidden">
+            <span id="statusIndicator"></span>
+            <div id="breakdownText" style="font-size: 0.9rem; margin-top: 8px; font-family: monospace; letter-spacing: 0.3px;"></div>
+        </div>
+    </div>
+
+    <div class="history-section">
+        <h3>📊 Session Validation Logs</h3>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Instrument Type</th>
+                        <th>Your Entry (mm)</th>
+                        <th>Target Metric (mm)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer-branding">
+        &copy; 2026 Clinicaltech.Liberia &bull; All Engineering Rights Reserved<br>
+        <span style="font-size: 0.8rem; opacity: 0.85; font-weight: 500;">
+            Deployed under academic oversight of Abraham P.Z. Kamara, BSc. Biomedical Science in support of BIOSSA-UL Digital Laboratory Platforms.
+        </span>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    const slider = document.getElementById('measurementSlider');
+    const sliderLabel = document.getElementById('sliderLabel');
+    const answerReadout = document.getElementById('answerReadout');
+    const userGuess = document.getElementById('userGuess');
+    const statusIndicator = document.getElementById('statusIndicator');
+    const breakdownText = document.getElementById('breakdownText');
+    const scoreText = document.getElementById('scoreText');
+    const historyBody = document.getElementById('historyBody');
+
+    let currentMode = 'caliper'; 
+    let forceReveal = false;
+    let score = 0;
+    let currentTaskAnswered = false;
+
+    const scale = 15; 
+
+    function switchTab(mode) {
+        currentMode = mode;
+        document.getElementById('tabCaliper').classList.toggle('active', mode === 'caliper');
+        document.getElementById('tabMicrometer').classList.toggle('active', mode === 'micrometer');
+        
+        answerReadout.className = "readout hidden";
+        userGuess.value = "";
+        forceReveal = false;
+        currentTaskAnswered = false;
+
+        if (mode === 'caliper') {
+            slider.min = "0";
+            slider.max = "30";
+            slider.step = "0.05";
+            slider.value = "7.45";
+        } else {
+            slider.min = "0";
+            slider.max = "15";
+            slider.step = "0.01";
+            slider.value = "4.28";
+        }
+        update();
+    }
+
+    function update() {
+        const val = parseFloat(slider.value);
+        sliderLabel.innerText = `Adjust Specimen Dimension: ${val.toFixed(2)} mm`;
+        
+        if (currentMode === 'caliper') {
+            const msr = Math.floor(val);
+            const vsc = Math.round((val - msr) / 0.05);
+            breakdownText.innerHTML = `[TELEMETRY] True Target: ${val.toFixed(2)} mm &bull; MSR = ${msr} mm | Vernier Division Intersect Index = ${vsc}`;
+        } else {
+            const psr = Math.floor(val * 2) / 2; 
+            const csr = Math.round((val - psr) / 0.01);
+            breakdownText.innerHTML = `[TELEMETRY] True Target: ${val.toFixed(2)} mm &bull; PSR = ${psr.toFixed(1)} mm | Thimble Division Intersect Index = ${csr}`;
+        }
+
+        if(!forceReveal && !answerReadout.classList.contains('status-correct') && !answerReadout.classList.contains('status-wrong')){
+             answerReadout.classList.add('hidden');
+        }
+
+        draw();
+    }
+
+    function generateRandom() {
+        const min = parseFloat(slider.min);
+        const max = parseFloat(slider.max);
+        const step = parseFloat(slider.step);
+        const stepsCount = (max - min) / step;
+        const randomStep = Math.floor(Math.random() * stepsCount);
+        slider.value = (min + randomStep * step).toFixed(2);
+        
+        answerReadout.className = "readout hidden";
+        userGuess.value = "";
+        forceReveal = false;
+        currentTaskAnswered = false;
+        update();
+    }
+
+    function toggleAnswer() {
+        forceReveal = !forceReveal;
+        if (forceReveal) {
+            answerReadout.className = "readout status-correct";
+            statusIndicator.innerHTML = "<strong>System Telemetry Overridden (Answer Revealed):</strong>";
+        } else {
+            answerReadout.className = "readout hidden";
+        }
+    }
+
+    function verifyReading() {
+        const val = parseFloat(slider.value);
+        const guess = parseFloat(userGuess.value);
+
+        if (isNaN(guess)) {
+            alert("Error: Please input a numeric verification entry before executing alignment check.");
+            return;
+        }
+
+        answerReadout.classList.remove('hidden');
+        let isCorrect = Math.abs(guess - val) < 0.005;
+        let instrumentName = currentMode === 'caliper' ? 'Vernier Caliper' : 'Micrometer';
+
+        if (isCorrect) {
+            answerReadout.className = "readout status-correct";
+            statusIndicator.innerHTML = "🎯 <strong>Calibration Validated!</strong> Metric values correspond securely.";
+            if(!currentTaskAnswered && !forceReveal){
+                score++;
+                scoreText.innerText = score;
+                currentTaskAnswered = true;
+            }
+        } else {
+            answerReadout.className = "readout status-wrong";
+            statusIndicator.innerHTML = "⚠️ <strong>Calibration Conflict!</strong> Numerical divergence detected outside system epsilon constraints.";
+        }
+
+        let row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${instrumentName}</td>
+            <td>${guess.toFixed(2)}</td>
+            <td>${val.toFixed(2)}</td>
+            <td class="${isCorrect ? 'text-success' : 'text-danger'}">${isCorrect ? 'PASSED' : 'FAILED'}</td>
+        `;
+        historyBody.insertBefore(row, historyBody.firstChild);
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const val = parseFloat(slider.value);
+
+        if (currentMode === 'caliper') {
+            drawCaliper(val);
+        } else {
+            drawMicrometer(val);
+        }
+    }
+
+    function drawCaliper(val) {
+        const startX = 120;
+        if (val > 0) {
+            ctx.fillStyle = "rgba(14, 165, 233, 0.35)";
+            ctx.fillRect(startX, 60, val * scale, 60);
+        }
+        
+        ctx.fillStyle = "#cbd5e1";
+        ctx.fillRect(40, 20, 720, 40); 
+        ctx.fillRect(startX - 30, 20, 30, 100); 
+
+        ctx.fillStyle = "#f8fafc";
+        ctx.strokeStyle = "#64748b";
+        ctx.lineWidth = 1;
+
+        for (let i = 0; i <= 45; i++) {
+            const x = startX + i * scale;
+            let tickHeight = 10;
+            if (i % 5 === 0) { tickHeight = 15; ctx.strokeStyle = "#94a3b8"; }
+            if (i % 10 === 0) {
+                tickHeight = 22;
+                ctx.strokeStyle = "#cbd5e1";
+                ctx.font = "11px monospace";
+                ctx.fillStyle = "#94a3b8";
+                ctx.fillText(i, x - 3, 38);
+            }
+            ctx.beginPath(); ctx.moveTo(x, 60); ctx.lineTo(x, 60 - tickHeight); ctx.stroke();
+        }
+
+        const slideOffset = val * scale;
+        const vStart = startX + slideOffset;
+
+        ctx.fillStyle = "#334155";
+        ctx.fillRect(vStart, 60, 200, 40); 
+        ctx.fillRect(vStart, 60, 30, 60); 
+
+        ctx.fillStyle = "#ffffff";
+        ctx.strokeStyle = "#94a3b8";
+        
+        for (let i = 0; i <= 10; i++) {
+            const x = vStart + (i * 0.9 * scale);
+            let tickHeight = 10;
+            if (i % 5 === 0) {
+                tickHeight = 16;
+                ctx.font = "10px monospace";
+                ctx.fillStyle = "#ffffff";
+                ctx.fillText((i * 0.1).toFixed(1), x - 8, 92);
+            }
+            ctx.beginPath(); ctx.moveTo(x, 60); ctx.lineTo(x, 60 + tickHeight); ctx.stroke();
+        }
+        
+        ctx.fillStyle = "#38bdf8";
+        ctx.beginPath(); ctx.moveTo(vStart, 62); ctx.lineTo(vStart - 5, 72); ctx.lineTo(vStart + 5, 72); ctx.fill();
+    }
+
+    function drawMicrometer(val) {
+        const originX = 160;
+        const uScale = 22; 
+
+        if (val > 0) {
+            ctx.fillStyle = "rgba(14, 165, 233, 0.35)";
+            ctx.fillRect(originX, 100, val * uScale, 40);
+        }
+
+        ctx.fillStyle = "#1e293b"; ctx.fillRect(80, 80, 80, 80); 
+        ctx.fillStyle = "#94a3b8"; ctx.fillRect(140, 100, 20, 40); 
+
+        const spindleX = originX + (val * uScale);
+        ctx.fillStyle = "#64748b"; ctx.fillRect(spindleX, 100, 150, 40); 
+
+        const sleeveLeft = originX + (15 * uScale);
+        ctx.fillStyle = "#cbd5e1"; ctx.fillRect(sleeveLeft, 90, 220, 60); 
+
+        ctx.strokeStyle = "#0f172a"; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(sleeveLeft, 120); ctx.lineTo(sleeveLeft + 200, 120); ctx.stroke(); 
+
+        ctx.lineWidth = 1; ctx.fillStyle = "#0f172a";
+        for (let i = 0; i <= 15; i++) {
+            const tx = sleeveLeft + (i * uScale);
+            ctx.beginPath(); ctx.moveTo(tx, 120); ctx.lineTo(tx, 105); ctx.stroke(); 
+            ctx.font = "11px monospace"; ctx.fillText(i, tx - 3, 100);
+
+            if (i < 15) {
+                ctx.beginPath(); ctx.moveTo(tx + (uScale / 2), 120); ctx.lineTo(tx + (uScale / 2), 132); ctx.stroke(); 
+            }
+        }
+
+        const thimbleLeft = sleeveLeft + (val * uScale);
+        ctx.fillStyle = "#0f172a"; ctx.fillRect(thimbleLeft, 80, 120, 80); 
+        ctx.fillStyle = "#475569"; ctx.fillRect(thimbleLeft, 80, 8, 80); 
+
+        ctx.strokeStyle = "#94a3b8"; ctx.fillStyle = "#ffffff";
+        const centralValue = (val % 0.5) / 0.01; 
+        const intCenter = Math.floor(centralValue);
+
+        for (let offset = -5; offset <= 5; offset++) {
+            let lineNum = (intCenter - offset + 50) % 50;
+            const targetY = 120 + (offset * 12) - ((centralValue % 1) * 12);
+            
+            if (targetY > 85 && targetY < 155) {
+                ctx.lineWidth = lineNum % 5 === 0 ? 2 : 1;
+                ctx.beginPath(); ctx.moveTo(thimbleLeft + 8, targetY); ctx.lineTo(thimbleLeft + 24, targetY); ctx.stroke();
+                if (lineNum % 5 === 0) {
+                    ctx.font = "10px monospace"; ctx.fillText(lineNum, thimbleLeft + 28, targetY + 3);
+                }
+            }
+        }
+
+        ctx.fillStyle = "#38bdf8";
+        ctx.beginPath(); ctx.moveTo(thimbleLeft - 5, 120); ctx.lineTo(thimbleLeft - 12, 115); ctx.lineTo(thimbleLeft - 12, 125); ctx.fill();
+    }
+
+    slider.addEventListener('input', update);
+    update();
+</script>
+</body>
+</html>
